@@ -1,0 +1,88 @@
+#include "robot-config.h"
+
+void usercontrol(){
+    //to cope with the joysticks not being exactly aligned to 0
+    int deadband==35;
+
+    //uses left joystick value to move left side
+    void leftDrive(int speed){
+        if abs(Controller1.Axis2.value())>deadband{
+            LeftFront.spin(directionType::fwd,speed,velocityUnits::rpm);
+            LeftBack.spin(directionType::fwd,speed,velocityUnits::rpm);
+        }
+        else {
+            LeftFront.stop();
+            LeftBack.stop();
+        }
+    }
+
+    //uses right joystick value to move right side
+    void rightDrive(int speed){
+        if abs(Controller1.Axis3.value())>deadband{
+            RightFront.spin(directionType::fwd,speed,velocityUnits::rpm);
+            RightBack.spin(directionType::fwd,speed,velocityUnits::rpm);
+        }
+        else {
+            RightFront.stop();
+            RightBack.stop();
+        }
+    }
+
+    //moves arm
+    void moveArm(int speed){
+        if abs(Controller2.Axis2.value())>deadband{
+            RightArm.spin(directionType::fwd,speed,velocityUnits::rpm);
+            LeftArm.spin(directionType::fwd,speed,velocityUnits::rpm);
+        }
+        else {
+            RightArm.stop();
+            LeftArm.stop();
+        }
+    }
+
+    //spins intake forward
+    void intakeForward(){
+        Intake.spin(directionType::fwd,63,velocityUnits::rpm);
+    }
+
+    //spins intake backward
+    void intakeBackward(){
+        Intake.spin(directionType::rev,63,velocityUnits::rpm);
+    }
+
+    //stops intake
+    void intakeStop(){
+        Intake.stop();
+    }
+    while(true){
+        //initialize and declare variables
+        int rightSpeed = 0;
+        int leftSpeed = 0;
+        int armSpeed = 0;
+    
+        rightSpeed = Controller1.Axis2.value();
+        leftSpeed = Controller1.Axis3.value();
+        armSpeed = Controller2.Axis2.value();
+        
+        //uses R2 and L2 buttons to spin intake motor
+        if Controller2.ButtonR2.pressing(){
+            intakeForward;
+        }
+        else if Controller2.ButtonL2.pressing(){
+            intakeBackward;
+        }
+        else{
+            intakeStop;
+        }
+    }
+}
+int main() {
+    //tell the competition code what to run for the driver control period
+    competition.drivercontrol(usercontrol);
+}
+
+
+
+
+
+
